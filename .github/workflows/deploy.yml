@@ -1,0 +1,45 @@
+name: Deploy static site to GitHub Pages
+
+# 触发条件：推送到 main 分支 或 手动触发
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+# 设置 GITHUB_TOKEN 权限，允许部署到 Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 避免并发部署冲突
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ 拉取仓库代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ 配置 GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      # 3️⃣ 上传构建产物（这里直接上传整个仓库，如果有构建步骤可改路径）
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'  # 如果是 VuePress/VitePress 改成构建目录，如 'dist'
+
+      # 4️⃣ 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
