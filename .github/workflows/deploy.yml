@@ -1,4 +1,4 @@
-name: Deploy static site to GitHub Pages
+name: Baka's Super Deploy Action 🚀
 
 # 触发条件：推送到 main 分支 或 手动触发
 on:
